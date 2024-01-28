@@ -17,6 +17,8 @@ void ICamera::BeginFrame() {
 }
 
 void ICamera::ImGuiDebug(const std::string& windowName, const std::string& cameraName) {
+	windowName;
+	cameraName;
 #ifdef _DEBUG
 	ImGui::Begin(windowName.c_str());
 

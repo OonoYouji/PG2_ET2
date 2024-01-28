@@ -1,10 +1,16 @@
-﻿#pragma once
+#pragma once
 
-#include "NovicePlus.h"
+#include <deque>
+#include <NovicePlus.h>
 
-// 前置宣言 -----
-class IScene;
-class ITransition;
+// Scenes -----
+#include <IScene.h>
+#include <ITransition.h>
+
+enum PopAround {
+	kFront,
+	kBack,
+};
 
 class GameManager final {
 public: // member method
@@ -15,17 +21,7 @@ public: // member method
 
 	// default method
 	static void Init();
-	static void Update();
-	static void Draw();
 	static void Finalize();
-
-private: // member object
-
-	static std::deque<IScene*> scene_;
-	static ITransition* transition_;
-
-	static int choiceAround_;
-	static bool isKeep_;
 
 public: // user method
 
@@ -37,16 +33,20 @@ public: // user method
 	/// <summary>
 	/// 次のシーンを決める関数
 	/// </summary>
-	/// <param name="next"> 次のscene </param>
-	/// <param name="isKeep"> 今のsceneをキープするか </param>
-	/// <param name="transition"> sceneの遷移 </param>
+	/// <param name="next">		次のscene				</param>
+	/// <param name="isKeep">		今のsceneをキープするか	</param>
+	/// <param name="transition">	sceneの遷移			</param>
 	static void SetNextScene(IScene* next, bool isKeep, ITransition* transition);
 
-	static void TransitionUpdate(void);
+	/// <summary>
+	/// 
+	/// </summary>
+	static void PopScene(PopAround around, int index);
 
-	static IScene* GetFrontScene(void) { return scene_.front(); }
-
-	static void Pop_Back();
+	/// <summary>
+	/// ここにTrueをセットするとゲームループを抜ける
+	/// </summary>
+	static void SetIsFinished(bool isFinished);
 
 };
 

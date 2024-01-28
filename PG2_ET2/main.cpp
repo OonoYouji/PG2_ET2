@@ -11,6 +11,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	GameManager::Run();
 
 	// ライブラリの終了
+	NovicePlus::Finalize();
 	Novice::Finalize();
 	return 0;
 }

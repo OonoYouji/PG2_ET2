@@ -1,173 +1,228 @@
-﻿#include "GameManager.h"
+#include "GameManager.h"
 
-// Include -----
-#include "NovicePlus.h"
-#include "IScene.h"
-#include "ITransition.h"
-#include "Scene_Game.h"
+#include <Scene_Game.h>
 #include <Scene_Title.h>
+#include <memory>
 
-/*=====================================
-	static member object Initialize
-=====================================*/
-std::deque<IScene*> GameManager::scene_;
-ITransition* GameManager::transition_ = nullptr;
-int GameManager::choiceAround_ = 0;
-bool GameManager::isKeep_ = false;
 
-// Constructor & Destructor -----
+namespace {
+
+	/// <summary>
+	/// ゲームループなどやシーンの管理
+	/// </summary>
+	class GameManagerSystem {
+		friend class GameManager;
+	public:
+
+		GameManagerSystem() = default;
+		~GameManagerSystem();
+
+		void Init(IScene* scene);
+		void Update();
+		void Draw();
+		void Finalize();
+
+	private:
+
+		std::deque<IScene*> scene_;
+		ITransition* transition_;
+
+		bool isKeep_;
+		bool isFinished_;
+
+	public:
+
+		/// <summary>
+		/// ゲームループ
+		/// </summary>
+		void Run();
+
+		/// <summary>
+		/// 遷移の更新処理
+		/// </summary>
+		void TransitionUpdate();
+
+		/// <summary>
+		/// 次のシーンと遷移をセットする
+		/// </summary>
+		void SetNextScene(IScene* next, bool isKeep, ITransition* transition);
+
+		/// <summary>
+		/// sceneをpopする
+		/// </summary>
+		/// <param name="index">残したいsceneの数</param>
+		void PopBack(int index);
+		void PopFront(int index);
+
+		void PopScene(PopAround around, int index);
+
+	};
+
+	GameManagerSystem::~GameManagerSystem() { Finalize(); }
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void GameManagerSystem::Init(IScene* scene) {
+		scene_.push_back(scene);
+		transition_ = nullptr;
+
+		isKeep_ = false;
+		isFinished_ = false;
+	}
+
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void GameManagerSystem::Update() {
+		if (transition_) {
+			TransitionUpdate();
+			return;
+		}
+		if (!scene_.empty()) { scene_.front()->Update(); }
+	}
+
+	/// <summary>
+	/// 描画処理
+	/// </summary>
+	void GameManagerSystem::Draw() {
+		if (transition_) {
+			scene_.back()->Draw();
+			transition_->Draw();
+			return;
+		}
+		if (!scene_.empty()) { scene_.front()->Draw(); }
+	}
+
+	/// <summary>
+	/// 終了処理
+	/// </summary>
+	void GameManagerSystem::Finalize() {
+		while (!scene_.empty()) {
+			scene_.front()->Finalize();
+			scene_.pop_front();
+		}
+		SafeDelete(transition_);
+	}
+
+	void GameManagerSystem::Run() {
+		// ウィンドウの×ボタンが押されるまでループ
+		while (!Novice::ProcessMessage()) {
+			// フレームの開始
+			Novice::BeginFrame();
+			NovicePlus::BeginFrame();
+
+			/// ↓更新処理ここから
+			this->Update();
+
+			/// ↓描画処理ここから
+			this->Draw();
+
+			// フレームの終了
+			Novice::EndFrame();
+
+			if (isFinished_) {
+				break;
+			}
+		}
+	}
+
+	void GameManagerSystem::TransitionUpdate() {
+
+		/// 遷移の更新
+		transition_->Update();
+
+		if (transition_->GetTriggerIsReturn()) {
+			// frontのsceneに変更
+			if (isKeep_) {
+				/// 現在のsceneとkeepするsceneの2つ
+				PopBack(2);
+			} else {
+				PopBack(1);
+			}
+			scene_.front()->Init();
+		}
+
+		// 遷移が終わったら消去
+		if (transition_->GetIsEnd()) {
+			SafeDelete(transition_);
+			return;
+		}
+	}
+
+	void GameManagerSystem::SetNextScene(IScene* next, bool isKeep, ITransition* transition) {
+
+		/// 引数の遷移に変更
+		if (transition_) { SafeDelete(transition_); }
+		transition_ = transition;
+
+		isKeep_ = isKeep;
+		scene_.push_front(next);
+
+		if (!isKeep_ && !transition_) {
+			PopBack(1);
+		}
+
+	}
+
+	void GameManagerSystem::PopBack(int index) {
+		while (scene_.size() > index) {
+			scene_.back()->Finalize();
+			scene_.pop_back();
+		}
+	}
+
+	void GameManagerSystem::PopFront(int index) {
+		while (scene_.size() > index) {
+			scene_.front()->Finalize();
+			scene_.pop_front();
+		}
+	}
+
+	void GameManagerSystem::PopScene(PopAround around, int index) {
+		if (around == kBack) {
+			PopBack(index);
+		} else {
+			PopFront(index);
+		}
+	}
+
+	std::unique_ptr<GameManagerSystem> sGameManagerSystem_;
+
+} /// namespace
+
+
+
+
+
+
+
 GameManager::GameManager() { Init(); }
 GameManager::~GameManager() { Finalize(); }
 
-/*===========================================
-	初期化関数
-===========================================*/
 void GameManager::Init() {
-
-	/// 最初のシーン -----
-	scene_.push_back(new Scene_Title());
+	sGameManagerSystem_ = std::make_unique<GameManagerSystem>();
+	sGameManagerSystem_->Init(new Scene_Title());
 }
 
-
-/*===========================================
-	更新処理関数
-===========================================*/
-void GameManager::Update() {
-
-
-	if (transition_) {
-		TransitionUpdate();
-		return;
-	}
-
-	// シーンの更新;
-	if (!scene_.empty()) {
-		scene_[choiceAround_]->Update();
-	}
-}
-
-
-/*===========================================
-	描画処理関数
-===========================================*/
-void GameManager::Draw() {
-
-	// シーンの描画;
-	if (!scene_.empty()) {
-		scene_[choiceAround_]->Draw();
-	}
-
-	if (transition_) {
-		transition_->Draw();
-	}
-
-
-}
-
-
-/*===========================================
-	終了処理関数
-===========================================*/
 void GameManager::Finalize() {
-	scene_.clear();
+	sGameManagerSystem_.reset();
 }
 
-
-/*===========================================
-	その他メンバ関数
-===========================================*/
-
-/// <summary>
-/// ゲームループ
-/// </summary>
 void GameManager::Run(void) {
-
-	// ウィンドウの×ボタンが押されるまでループ
-	while (Novice::ProcessMessage() == 0) {
-		// フレームの開始
-		Novice::BeginFrame();
-		NovicePlus::BeginFrame();
-
-		/// ↓更新処理ここから
-		GameManager::Update();
-
-		/// ↓描画処理ここから
-		GameManager::Draw();
-
-		// フレームの終了
-		Novice::EndFrame();
-
-		// ESCキーが押されたらループを抜ける
-		if (NovicePlus::IsTriggerKey(DIK_ESCAPE)) {
-			break;
-		}
-	}
+	sGameManagerSystem_->Run();
 }
 
 void GameManager::SetNextScene(IScene* next, bool isKeep, ITransition* transition) {
-
-	// 遷移を一度消し、
-	if (transition_) { SafeDelete(transition_); }
-	transition_ = transition;
-
-	isKeep_ = isKeep;
-	if (isKeep) {
-		/// キープするのでbackのsceneを
-		choiceAround_ = 1;
-	} else {
-		/// キープしないのでfrontのsceneを
-		choiceAround_ = 0;
-	}
-
-	// 次のシーンを格納;
-	scene_.push_back(next);
-
+	sGameManagerSystem_->SetNextScene(next, isKeep, transition);
 }
 
-void GameManager::TransitionUpdate(void) {
-
-	transition_->Updata();
-
-	if (transition_->GetTriggerIsReturn()) {
-		// frontのsceneに変更
-		if (isKeep_) {
-			choiceAround_ = 1;
-
-			// キープできるシーンは2つまで;
-			while (scene_.size() > 2) {
-				scene_.front()->Finalize();
-				scene_.pop_front();
-			}
-
-			scene_.back()->Init();
-
-		} else {
-			choiceAround_ = 0;
-
-			// いらないsceneをpopする;
-			while (scene_.size() > 1) {
-				scene_.front()->Finalize();
-				scene_.pop_front();
-			}
-
-			scene_.front()->Init();
-		}
-	}
-
-	// 遷移が終わったら消去
-	if (transition_->GetIsEnd()) {
-		SafeDelete(transition_);
-		return;
-	}
-
+void GameManager::PopScene(PopAround around, int index) {
+	sGameManagerSystem_->PopScene(around, index);
 }
 
-void GameManager::Pop_Back() {
-	// いらないsceneをpopする;
-	while (scene_.size() > 1) {
-		scene_.back()->Finalize();
-		scene_.pop_back();
-	}
-
-	choiceAround_ = 0;
+void GameManager::SetIsFinished(bool isFinished) {
+	sGameManagerSystem_->isFinished_ = isFinished;
 }
+
+

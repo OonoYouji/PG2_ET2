@@ -15,7 +15,7 @@ public: // member method
 
 	// default method
 	void Init() override;
-	void Updata() override;
+	void Update() override;
 	void Draw() override;
 	void Finalize() override;
 

@@ -32,6 +32,8 @@ void NovicePlus::BeginFrame(void) {
 
 void NovicePlus::Finalize(void) {
 	SafeDelete(input_);
+	GameManager::Finalize();
+	GameTextureManager::Finalize();
 }
 
 

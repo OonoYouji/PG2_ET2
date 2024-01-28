@@ -43,7 +43,7 @@ void NormalTransition::Init() {
 /*===========================================
 	更新処理関数
 ===========================================*/
-void NormalTransition::Updata() {
+void NormalTransition::Update() {
 	// 前フレームの状態を保存
 	preIsReturn_ = isReturn_;
 
