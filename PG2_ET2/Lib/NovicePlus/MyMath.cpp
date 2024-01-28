@@ -42,12 +42,13 @@ Vector4 MyMath::FloatColor(uint32_t color) {
 
 
 QuadVerf MyMath::MakeLocalVertex(const Vec2f& size) {
-	return {
-		{ -size.x * 0.5f,  size.y * 0.5f },
-		{  size.x * 0.5f,  size.y * 0.5f },
-		{ -size.x * 0.5f, -size.y * 0.5f },
-		{  size.x * 0.5f, -size.y * 0.5f }
-	};
+	QuadVerf result = QuadVerf(
+		Vec2f(-size.x * 0.5f, size.y * 0.5f),
+		Vec2f(size.x * 0.5f, size.y * 0.5f),
+		Vec2f(-size.x * 0.5f, -size.y * 0.5f),
+		Vec2f(size.x * 0.5f, -size.y * 0.5f)
+	);
+	return result;
 }
 
 float MyMath::Theta(const Vec2f& v) {

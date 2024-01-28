@@ -177,9 +177,9 @@ Vec2f Matrix3x3::Transform(const Vec2f& v, const Matrix3x3& matrix) {
 
 QuadVerf Matrix3x3::Transform(const QuadVerf& vertex, const Matrix3x3& matrix) {
 	return QuadVerf(
-		Matrix3x3::Transform(vertex.lt, matrix),
-		Matrix3x3::Transform(vertex.rt, matrix),
-		Matrix3x3::Transform(vertex.lb, matrix),
-		Matrix3x3::Transform(vertex.rb, matrix)
+		Matrix3x3::Transform(vertex[LT], matrix),
+		Matrix3x3::Transform(vertex[RT], matrix),
+		Matrix3x3::Transform(vertex[LB], matrix),
+		Matrix3x3::Transform(vertex[RB], matrix)
 	);
 }

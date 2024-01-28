@@ -24,15 +24,15 @@ bool Collision::CheckLR(const Vec2f& pos1, const Vec2f& pos2, const Vec2f& pos2D
 
 
 bool Collision::Rect::Rect(const QuadVerf& ver1, const QuadVerf& ver2) {
-	if (Collision::Rect::Point(ver2, ver1.lt)) { return true; }
-	if (Collision::Rect::Point(ver2, ver1.rt)) { return true; }
-	if (Collision::Rect::Point(ver2, ver1.lb)) { return true; }
-	if (Collision::Rect::Point(ver2, ver1.rb)) { return true; }
+	if (Collision::Rect::Point(ver2, ver1[LT])) { return true; }
+	if (Collision::Rect::Point(ver2, ver1[RT])) { return true; }
+	if (Collision::Rect::Point(ver2, ver1[LB])) { return true; }
+	if (Collision::Rect::Point(ver2, ver1[RB])) { return true; }
 
-	if (Collision::Rect::Point(ver1, ver2.lt)) { return true; }
-	if (Collision::Rect::Point(ver1, ver2.rt)) { return true; }
-	if (Collision::Rect::Point(ver1, ver2.lb)) { return true; }
-	if (Collision::Rect::Point(ver1, ver2.rb)) { return true; }
+	if (Collision::Rect::Point(ver1, ver2[LT])) { return true; }
+	if (Collision::Rect::Point(ver1, ver2[RT])) { return true; }
+	if (Collision::Rect::Point(ver1, ver2[LB])) { return true; }
+	if (Collision::Rect::Point(ver1, ver2[RB])) { return true; }
 
 	return false;
 }
@@ -42,10 +42,10 @@ bool Collision::Rect::Circle(const QuadVerf& ver, const Vec2f center, float dist
 	if (Collision::Rect::Point(ver, center)) { return true; }
 
 	// 円と線の当たり判定
-	if (Collision::Circle::Line(center, ver.lt, ver.lb, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.lb, ver.rb, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.rb, ver.rt, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.rt, ver.lt, distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[LT], ver[LB], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[LB], ver[RB], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[RB], ver[RT], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[RT], ver[LT], distance)) { return true; }
 
 	return false;
 }
@@ -53,10 +53,10 @@ bool Collision::Rect::Circle(const QuadVerf& ver, const Vec2f center, float dist
 
 bool Collision::Rect::Point(const QuadVerf& ver, const Vec2f& point) {
 	//外積の計算をしPointがRectの外側にいた場合falseを返す;
-	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver.lt, point, true), Vec2Method::Direction(ver.lt, ver.lb, true)) < 0) { return false; }
-	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver.rt, point, true), Vec2Method::Direction(ver.rt, ver.lt, true)) < 0) { return false; }
-	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver.lb, point, true), Vec2Method::Direction(ver.lb, ver.rb, true)) < 0) { return false; }
-	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver.rb, point, true), Vec2Method::Direction(ver.rb, ver.rt, true)) < 0) { return false; }
+	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver[LT], point, true), Vec2Method::Direction(ver[LT], ver[LB], true)) < 0) { return false; }
+	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver[RT], point, true), Vec2Method::Direction(ver[RT], ver[LT], true)) < 0) { return false; }
+	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver[LB], point, true), Vec2Method::Direction(ver[LB], ver[RB], true)) < 0) { return false; }
+	if (Vec2Method::CrossProduct(Vec2Method::Direction(ver[RB], point, true), Vec2Method::Direction(ver[RB], ver[RT], true)) < 0) { return false; }
 
 	return true;
 }
@@ -72,10 +72,10 @@ bool Collision::Circle::Rect(const Vec2f center, const QuadVerf& ver, float dist
 	if (Collision::Rect::Point(ver, center)) { return true; }
 
 	// 円と線の当たり判定
-	if (Collision::Circle::Line(center, ver.lt, ver.lb, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.lb, ver.rb, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.rb, ver.rt, distance)) { return true; }
-	if (Collision::Circle::Line(center, ver.rt, ver.lt, distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[LT], ver[LB], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[LB], ver[RB], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[RB], ver[RT], distance)) { return true; }
+	if (Collision::Circle::Line(center, ver[RT], ver[LT], distance)) { return true; }
 
 	return false;
 }

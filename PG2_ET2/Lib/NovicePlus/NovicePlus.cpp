@@ -156,17 +156,17 @@ void NovicePlus::DrawQuad(const QuadVerf& vertex, const Vec2f& lt, const Vec2f& 
 
 	Novice::DrawQuad(
 		// left top
-		static_cast<int>(vertex.lt.x),
-		static_cast<int>(vertex.lt.y),
+		static_cast<int>(vertex[LT].x),
+		static_cast<int>(vertex[LT].y),
 		// right top
-		static_cast<int>(vertex.rt.x),
-		static_cast<int>(vertex.rt.y),
+		static_cast<int>(vertex[RT].x),
+		static_cast<int>(vertex[RT].y),
 		// left bottom
-		static_cast<int>(vertex.lb.x),
-		static_cast<int>(vertex.lb.y),
+		static_cast<int>(vertex[LB].x),
+		static_cast<int>(vertex[LB].y),
 		// right bottom
-		static_cast<int>(vertex.rb.x),
-		static_cast<int>(vertex.rb.y),
+		static_cast<int>(vertex[RB].x),
+		static_cast<int>(vertex[RB].y),
 
 		static_cast<int>(lt.x),
 		static_cast<int>(lt.y),

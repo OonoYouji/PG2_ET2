@@ -1,6 +1,7 @@
 #pragma once
 
 #include <IScene.h>
+#include <QuadVertex.h>
 
 class Scene_Title final
 	: public IScene {
@@ -15,7 +16,6 @@ public:
 	void Finalize() override;
 
 private:
-
 
 
 };

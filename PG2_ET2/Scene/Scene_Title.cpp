@@ -13,8 +13,7 @@ Scene_Title::~Scene_Title() { Finalize(); }
 
 void Scene_Title::Init() {
 
-
-
+	
 }
 
 void Scene_Title::Update() {
@@ -29,7 +28,7 @@ void Scene_Title::Update() {
 void Scene_Title::Draw() {
 
 	NovicePlus::DrawBox(
-		Vec2f(640.0f,360.0f),
+		Vec2f(640.0f, 360.0f),
 		kWindowSize.castFloat(),
 		0x202020ff
 	);
@@ -42,6 +41,7 @@ void Scene_Title::Draw() {
 		WHITE
 	);
 
+
 }
 
 void Scene_Title::Finalize() {
@@ -49,3 +49,5 @@ void Scene_Title::Finalize() {
 
 
 }
+
+

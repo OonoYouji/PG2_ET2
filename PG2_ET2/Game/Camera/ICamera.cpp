@@ -55,10 +55,10 @@ void ICamera::SetOrthoMatrix(const QuadVerf& localVertex) {
 
 	/// 行列を再生成
 	orthoMatrix_ = MakeOrthoMatrix(
-		localVertex_.lt.y,
-		localVertex_.rb.y,
-		localVertex_.lt.x,
-		localVertex_.rb.x
+		localVertex_[LT].y,
+		localVertex_[RB].y,
+		localVertex_[LT].x,
+		localVertex_[RB].x
 	);
 }
 

@@ -33,7 +33,7 @@ public: // user method
 	/// <summary>
 	/// 次のシーンを決める関数
 	/// </summary>
-	/// <param name="next">		次のscene				</param>
+	/// <param name="next">			次のscene				</param>
 	/// <param name="isKeep">		今のsceneをキープするか	</param>
 	/// <param name="transition">	sceneの遷移			</param>
 	static void SetNextScene(IScene* next, bool isKeep, ITransition* transition);
